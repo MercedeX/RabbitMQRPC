@@ -175,7 +175,7 @@ namespace Transport
             return tcs.Task;
         }
 
-        public Task<object> Ask<TRequest>(TRequest request, CancellationToken token) 
+        public async Task<TResponse> Ask<TResponse>(object request, CancellationToken token) where TResponse: class
         {
             var key = Guid.NewGuid();
             var tcs = new TaskCompletionSource<object>();
@@ -200,7 +200,8 @@ namespace Transport
                 tcs.SetCanceled();
             }
 
-            return tcs.Task;
+            var tmp = await tcs.Task;
+            return tmp as TResponse;
         }
 
     }

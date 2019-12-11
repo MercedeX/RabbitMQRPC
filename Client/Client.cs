@@ -32,7 +32,7 @@ namespace Client
                             try
                             {
                                 var st = DateTime.UtcNow;
-                                var res = await bus.Ask(cmd, CancellationToken.None);
+                                var res = await bus.Ask<string>(cmd, CancellationToken.None);
                                 var total = DateTime.UtcNow.Subtract(st);
                                 min = total < min? total: min;
                                 max = total > max? total: max;

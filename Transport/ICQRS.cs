@@ -8,6 +8,6 @@ namespace Transport
     public interface ICQRS
     {
         Task<Unit> Execute<TCommand>(TCommand command, CancellationToken token);
-        Task<object> Ask<TRequest>(TRequest request, CancellationToken token);
+        Task<TResponse> Ask<TResponse>(object request, CancellationToken token)where TResponse: class;
     }
 }
