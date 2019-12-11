@@ -10,7 +10,7 @@ namespace Server
     {
         static async Task Main(string[] args)
         {
-            var listener = new CQRSListener(new SerializerImpl());
+            var listener = new CQRSServer(new SerializerImpl());
 
             listener.CommandReceived += async (sender, args) =>
             {
@@ -29,6 +29,8 @@ namespace Server
                     WriteLine(args.Key);
                     args.SetResult($"Hello World {args.Key}");
                 }
+
+                await Task.Yield();
             };
 
             WriteLine($"Server is running");

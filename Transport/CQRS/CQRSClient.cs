@@ -1,25 +1,18 @@
 ﻿using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
-using System.Runtime.Serialization.Formatters.Binary;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using FluentValidation.Results;
-using LanguageExt;
-using Newtonsoft.Json;
 using RabbitMQ.Client;
 using AMQP = RabbitMQ.Client;
 using Unit = System.Reactive.Unit;
 
-using static LanguageExt.Prelude;
 
-
-namespace Transport
+namespace Transport.CQRS
 {
-    public class CQRSImpl: ICQRS, IDisposable
+    public class CQRSClient: ICQRS, IDisposable
     {
         private readonly ISerializer _serializer;
         private readonly ConcurrentDictionary<Guid, TaskCompletionSource<Unit>> _commandResults;
@@ -32,7 +25,7 @@ namespace Transport
         private const string KNQExchange = "NQ.Exchange";
 
 
-        public CQRSImpl(ISerializer serializer)
+        public CQRSClient(ISerializer serializer)
         {
             _serializer = serializer;
             

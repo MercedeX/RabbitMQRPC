@@ -44,7 +44,7 @@ namespace Transport
         public object Result { get; private set; }
     }
 
-    public class CQRSListener
+    public class CQRSServer
     {
         private readonly ISerializer _serializer;
         private readonly AMQP.ConnectionFactory _factory;
@@ -61,7 +61,7 @@ namespace Transport
         public event EventHandler<CommandArgs> CommandReceived;
         public event EventHandler<QueryArgs> QueryReceived;
 
-        public CQRSListener(ISerializer serializer)
+        public CQRSServer(ISerializer serializer)
         {
             _serializer = serializer;
             _factory = new RabbitMQ.Client.ConnectionFactory

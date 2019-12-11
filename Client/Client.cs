@@ -5,6 +5,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Messaging;
 using Transport;
+using Transport.CQRS;
 using static System.Console;
 
 namespace Client
@@ -13,7 +14,7 @@ namespace Client
     {
         static async Task Main(string[] args)
         {
-            var bus = new CQRSImpl(new SerializerImpl());
+            var bus = new CQRSClient(new SerializerImpl());
 
             try
             {
