@@ -25,6 +25,25 @@ namespace Transport
         }
     }
 
+    public class QueryArgs : EventArgs
+    {
+        public object Query { get; }
+        public Guid Key { get;   }
+
+        public QueryArgs(Guid key, object query)
+        {
+            Key = key;
+            Query = query;
+        }
+
+        public void SetResult<TObject>(TObject obj)
+        {
+            Result = obj;
+        }
+
+        public object Result { get; private set; }
+    }
+
     public class CQRSListener
     {
         private readonly ISerializer _serializer;
@@ -40,6 +59,7 @@ namespace Transport
         private const string KNQExchange = "NQ.Exchange";
 
         public event EventHandler<CommandArgs> CommandReceived;
+        public event EventHandler<QueryArgs> QueryReceived;
 
         public CQRSListener(ISerializer serializer)
         {
@@ -98,7 +118,7 @@ namespace Transport
                 if (Guid.TryParse(args.BasicProperties.CorrelationId, out var key))
                 {
                     var query = _serializer.Deserialize(args.Body);
-                    query.IfSomeAsync(x=>QueryReceived(key, args.BasicProperties.ReplyTo, x)).GetAwaiter().GetResult();
+                    query.IfSomeAsync(x=>ProcessQuery(key, args.BasicProperties.ReplyTo, x)).GetAwaiter().GetResult();
                     _model.BasicAck(args.DeliveryTag, false);
                 }
 
@@ -125,19 +145,11 @@ namespace Transport
             return ret;
         }
 
-        private Task QueryReceived(in Guid key, in string replyTo, in object query)
+        private async Task ProcessQuery(Guid key, string replyTo, object query)
         {
-            //Convert the obj back to original. 
-            Console.WriteLine(query);
-            // send the reply back.
-            if (query is Object)
-            {
-
-            }
-
-            var data = new KeyValuePair<Guid, string>(key, "I'm doing fine");
-            return Respond(key, replyTo, data);
-
+            var args = new QueryArgs(key, query);
+            QueryReceived?.Invoke(this, args);
+            await Respond(key, replyTo, args.Result);
         }
 
 

@@ -22,6 +22,15 @@ namespace Server
                 await Task.Yield();
             };
 
+            listener.QueryReceived += async (sender, args) =>
+            {
+                if (args.Query is MyCommand cmd)
+                {
+                    WriteLine(args.Key);
+                    args.SetResult($"Hello World {args.Key}");
+                }
+            };
+
             WriteLine($"Server is running");
 
             while(ReadKey().Key != ConsoleKey.Escape);

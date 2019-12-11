@@ -25,7 +25,6 @@ namespace Client
                     {
                       
                         var commands = CreateCommands(count);
-
                         TimeSpan max = TimeSpan.Zero, min = TimeSpan.MaxValue;
                         var processingStart = DateTime.UtcNow;
                         foreach (var cmd in commands)
@@ -33,10 +32,12 @@ namespace Client
                             try
                             {
                                 var st = DateTime.UtcNow;
-                                var res = await bus.Execute(cmd, CancellationToken.None);
+                                var res = await bus.Ask(cmd, CancellationToken.None);
                                 var total = DateTime.UtcNow.Subtract(st);
                                 min = total < min? total: min;
                                 max = total > max? total: max;
+
+                                WriteLine(res);
                             }
                             catch (Exception ex)
                             {
