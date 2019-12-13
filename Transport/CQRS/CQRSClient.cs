@@ -72,7 +72,6 @@ namespace Transport.CQRS
                                 break;
                             case Exception e:
                                 tcs.SetException(e);
-                                tcs.SetCanceled();
                                 break;
                         } 
                     }
@@ -87,7 +86,6 @@ namespace Transport.CQRS
                                 break;
                             case Exception e:
                                 tcs.SetException(e);
-                                tcs.SetCanceled();
                                 break;
                             case object obj:
                                 tcs.SetResult(obj);
@@ -156,13 +154,11 @@ namespace Transport.CQRS
             catch (Exception ex) when (ex.Message.Contains("waiting queue"))
             {
                 tcs.SetException(ex);
-                tcs.SetCanceled();
             }
             catch (Exception ex)
             {
                 _commandResults.TryRemove(key, out var _);
                 tcs.SetException(ex);
-                tcs.SetCanceled();
             }
 
             return tcs.Task;
@@ -184,13 +180,11 @@ namespace Transport.CQRS
             catch (Exception ex) when (ex.Message.Contains("waiting queue"))
             {
                 tcs.SetException(ex);
-                tcs.SetCanceled();
             }
             catch (Exception ex)
             {
                 _queryResults.TryRemove(key, out var _);
                 tcs.SetException(ex);
-                tcs.SetCanceled();
             }
 
             var tmp = await tcs.Task;

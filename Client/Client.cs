@@ -68,7 +68,7 @@ namespace Client
             for (var i = 0; i < limit; i++)
             {
                 var ch = (char) (i % 100);
-                list.Add(new MyCommand($"Command {i}", i));
+                list.Add(new MyCommand($"Command {i}", 8081));
             }
 
             return list;

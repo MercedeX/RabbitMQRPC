@@ -10,27 +10,36 @@ namespace Server
     {
         static async Task Main(string[] args)
         {
-            var listener = new CQRSServer(new SerializerImpl());
+            var config = new AMQPConfiguration
+            {
+                Host = "localhost",
+                UserId = "nquser",
+                Password = "nquser#123",
+                VirtualHost = "/",
+                Port = 5672
+            };
 
-            listener.CommandReceived += async (sender, args) =>
+            var listener = new CQRSServer(config, new SerializerImpl());
+
+            listener.CommandReceived += (sender, args) =>
             {
                 if (args.Command is MyCommand cmd)
                 {
                     WriteLine($"{cmd.Port}  {cmd.Name}");
+                    if (cmd.Port == 8081)
+                        throw new Exception("Cannot use this port");
                 }
-
-                await Task.Yield();
             };
 
-            listener.QueryReceived += async (sender, args) =>
+            listener.QueryReceived += (sender, args) =>
             {
                 if (args.Query is MyCommand cmd)
                 {
                     WriteLine(args.Key);
+                    if (cmd.Port == 8081)
+                        throw new PlatformNotSupportedException();
                     args.SetResult($"Hello World {args.Key}");
                 }
-
-                await Task.Yield();
             };
 
             WriteLine($"Server is running");
